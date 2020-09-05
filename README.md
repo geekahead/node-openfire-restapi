@@ -1,3 +1,6 @@
+## This project is fork from ns23/node-openfire-restapi which implements restapi to access OpenFire Admin based on Rest Api plugin.
+## We plan to enhance this project to support full REST Admin APIs and Client APIs.
+
 ## node-openfire-restapi
 
 A simple Node plugin designed to work with Openfire Rest Api plugin. It is used to remote manage the Openfire server.
