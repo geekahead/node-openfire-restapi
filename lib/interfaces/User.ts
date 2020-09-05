@@ -37,3 +37,11 @@ export interface IRetriveUserSearch {
   propertyKey?: string;
   propertyValue?: string;
 }
+
+export interface IGroupName {
+    groupname: string;
+}
+
+export interface IGroups {
+    groups: IGroupName[];
+}
