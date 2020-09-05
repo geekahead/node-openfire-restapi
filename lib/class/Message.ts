@@ -6,7 +6,7 @@ class Message {
     this.rest = rest;
   }
 
-  async broadcastMessage(message: string): Promise<number> {
+  public async broadcastMessage(message: string): Promise<number> {
     const body = this.getBody(message);
 
     const resp = await this.rest.post(this.endPoint, {

@@ -3,17 +3,19 @@
  */
 
 import got, { Got, OptionsOfTextResponseBody, Response, HTTPError } from 'got';
+import { RequestFormat, ResponseFormat } from './interfaces/common';
 
 export class Rest {
   private instance: Got;
 
-  constructor(endPoint: string, secret: string) {
+  constructor(endPoint: string, secret: string, requestFormat: RequestFormat = "json", responseFormat: ResponseFormat = "json") {
     this.instance = got.extend({
       prefixUrl: endPoint,
-      responseType: 'json',
+      responseType: "json",
       headers: {
         Authorization: secret,
-        Accept: 'application/json',
+        'Content-Type': `application/${requestFormat}`,
+        Accept: `application/${responseFormat}`
       },
     });
   }

@@ -1,6 +1,6 @@
 import { Rest } from '../got';
 import { URLSearchParams } from 'url';
-import { IParamUser, IRetriveUserSearch, IRetriveUsersResponse, IUser, IGroups } from './../interfaces/User';
+import { IParamUser, IRetriveUserSearch, IRetriveUsersResponse, IUser, IGroupNames } from './../interfaces/User';
 import { RosterObject, RosterItem } from '../interfaces/Roster';
 import { Response } from 'got/dist/source';
 import Helper from '../helper';
@@ -88,7 +88,7 @@ class User {
    * 
    * @param username 
    */
-  public async retrieveAllUserGroups(username: string): Promise<IGroups> {
+  public async retrieveAllUserGroups(username: string): Promise<IGroupNames> {
     return this.getUserGroups(username);
   }
 
@@ -99,9 +99,9 @@ class User {
    * 
    * @param username 
    */
-  public async getUserGroups(username: string): Promise<IGroups> {
+  public async getUserGroups(username: string): Promise<IGroupNames> {
     const url = `${this.endPoint}/users/${username}/groups`;
-    const groups = await this.rest.get(url) as IGroups;
+    const groups = await this.rest.get(url) as IGroupNames;
     return groups;
   }
 
@@ -112,9 +112,9 @@ class User {
    * @param username 
    * @param groups 
    */
-  public async addUserToGroups(username: string, groups: IGroups): Promise<number> {
+  public async addUserToGroups(username: string, groupNames: IGroupNames): Promise<number> {
     const url = `${this.endPoint}/${username}/groups}`;
-    const { statusCode } = await this.rest.post(url, {json: groups});
+    const { statusCode } = await this.rest.post(url, {json: groupNames});
     return statusCode;
   }
 
@@ -139,9 +139,9 @@ class User {
    * @param username 
    * @param groupName 
    */
-  public async deleteUserFromGroups(username: string, groupName: string): Promise<Object> {
-    const url = `${this.endPoint}/${username}/groups/${groupName}`;
-    const { body, statusCode } = (await this.rest.delete(url)) as Response;
+  public async deleteUserFromGroups(username: string, groupNames: IGroupNames): Promise<Object> {
+    const url = `${this.endPoint}/${username}/groups`;
+    const { body, statusCode } = (await this.rest.delete(url, {json: groupNames})) as Response;
     return {
       body: body as object,
       statusCode,

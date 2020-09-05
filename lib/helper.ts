@@ -5,10 +5,15 @@
 import * as xml2js from 'xml2js';
 import { RosterItem } from './interfaces/Roster';
 const parser = new xml2js.Parser({ explicitArray: false });
+const builder = new xml2js.Builder();
 
 class Helper {
   static async xml2json(xmlstring: string) {
     return await parser.parseStringPromise(xmlstring);
+  }
+
+  static async json2XML(json: string) {
+    return builder.buildObject(json);
   }
 
   static makeRoosterBody(params: RosterItem): string {

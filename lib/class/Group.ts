@@ -4,25 +4,42 @@ import { Rest } from '../got';
  * All api params related to groups
  * @see https://www.igniterealtime.org/projects/openfire/plugins/1.3.8/restAPI/readme.html#group-related-rest-endpoints
  */
+
+import {IGroup, IGroups} from '../interfaces/User';
+
 class Group {
   private endPoint = 'groups';
   constructor(private rest: Rest) {}
 
-  async retriveAllGroups(): Promise<Array<Object>> {
+  /**
+   * Retrieve all groups.
+   */
+  public async retriveAllGroups(): Promise<IGroups> {
     const url = `${this.endPoint}`;
-    const groups = (await this.rest.get(url)) as Array<Object>;
+    const groups = (await this.rest.get(url)) as IGroups;
 
     return groups;
   }
 
-  async retriveGroup(groupName: string): Promise<Array<Object>> {
+  /**
+   * Retrieve a group.
+   * 
+   * @param groupName Retrieve a group.
+   */
+  public async retriveGroup(groupName: string): Promise<IGroup> {
     const url = `${this.endPoint}/${groupName}`;
-    const group = (await this.rest.get(url)) as Array<Object>;
+    const group = (await this.rest.get(url)) as IGroup;
 
     return group;
   }
 
-  async createGroup(name: string, description: string): Promise<number> {
+  /**
+   * Crate a group.
+   * 
+   * @param name 
+   * @param description 
+   */
+  public async createGroup(name: string, description: string): Promise<number> {
     const url = `${this.endPoint}`;
 
     const body = this.getBody(name, description);
@@ -35,13 +52,25 @@ class Group {
     return resp.statusCode;
   }
 
-  async deleteGroup(groupName: string): Promise<number> {
+  /**
+   * Delete a group.
+   * 
+   * @param groupName 
+   */
+  public async deleteGroup(groupName: string): Promise<number> {
     const url = `${this.endPoint}/${groupName}`;
     const status = await this.rest.delete(url);
     return status.statusCode;
   }
 
-  async updateGroup(groupName: string, updatedName: string, description: string): Promise<number> {
+  /**
+   * Update group.
+   * 
+   * @param groupName 
+   * @param updatedName 
+   * @param description 
+   */
+  public async updateGroup(groupName: string, updatedName: string, description: string): Promise<number> {
     const url = `${this.endPoint}/${groupName}`;
     const body = this.getBody(updatedName, description);
     const status = await this.rest.put(url, {
@@ -52,6 +81,7 @@ class Group {
     return status.statusCode;
   }
 
+  
   private getBody(name: string, description: string) {
     return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <group>
