@@ -62,7 +62,7 @@ export type PresenceStatus = "Online" | "Offline";
 export interface ISession {
     sessionId: string;
     username: string;
-    resource: string;
+    resource?: string;
     node: string;
     sessionStatus: SessionStatus;
     presenceStatus: PresenceStatus;
@@ -77,4 +77,9 @@ export interface ISession {
 
 export interface ISessions {
     sessions: ISession[];
+}
+
+export interface ISessionsCount {
+    localSessions: number;
+    clusterSessions: number;
 }

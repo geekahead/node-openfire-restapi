@@ -81,7 +81,6 @@ class Group {
     return status.statusCode;
   }
 
-  
   private getBody(name: string, description: string) {
     return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <group>

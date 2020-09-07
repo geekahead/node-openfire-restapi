@@ -1,4 +1,6 @@
+import { Rest } from '../got';
 import { ISessions } from "../interfaces/User";
+import { Response } from 'got/dist/source';
 
 class Session {
     private endPoint = 'sessions';
@@ -26,13 +28,13 @@ class Session {
     }
 
     /**
-     * Retrieve a user sessions.
+     * close a user sessions.
      * 
      * @param username 
      */
     public async closeUserSessions(username: string): Promise<number> {
         const url = `${this.endPoint}/${username}`;
-        const { statusCode } = (await this.rest.get(url));
+        const { body, statusCode } = (await this.rest.get(url)) as Response;
         return statusCode;
     }
 }

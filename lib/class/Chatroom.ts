@@ -1,6 +1,6 @@
 import { Rest } from '../got';
 import { Response } from 'got/dist/source';
-import { IChatroom, Roles, ChatroomsTypes } from '../interfaces/Chatroom';
+import { IChatroom, Roles, ChatroomsTypes, IOccupants } from '../interfaces/Chatroom';
 
 /**
  * All the endpoints related to chatroom
@@ -82,9 +82,9 @@ class Chatroom {
    * @param roomname 
    * @param servicename 
    */
-  public async getChatroomOccupants(roomname: string, servicename = 'conference'): Promise<Object> {
+  public async getChatroomOccupants(roomname: string, servicename = 'conference'): Promise<IOccupants> {
     const url = `${this.endPoint}/${roomname}/occupants`;
-    const occupants = (await this.rest.get(url, { searchParams: { servicename } })) as Object;
+    const occupants = (await this.rest.get(url, { searchParams: { servicename } })) as IOccupants;
     return occupants;
   }
 

@@ -1,7 +1,7 @@
 import { Rest } from '../got';
 import { Response } from 'got/dist/source';
 import { Properties, IPProperty } from '../interfaces/User';
-import { IRetrieveSystemPropertiesRespose } from '../interfaces/System';
+import { ISystemProperties, ISessionsCount } from '../interfaces/System';
 
 class System {
     private endPoint = 'system';
@@ -10,9 +10,9 @@ class System {
     /**
      * Retrieve all system properties.
      */
-    public async getAllSystemProperties(): Promise<IRetrieveSystemPropertiesRespose> {
+    public async getAllSystemProperties(): Promise<ISystemProperties> {
         const url = `${this.endPoint}/properties`;
-        const systemProperties = (await this.rest.get(url)) as IRetrieveSystemPropertiesRespose;
+        const systemProperties = (await this.rest.get(url)) as ISystemProperties;
         return systemProperties;
     }
 
@@ -60,9 +60,12 @@ class System {
         return statusCode;
     }
 
-    public async getSessionsCount(): Promise<number> {
+    /**
+     * Retrieve session counts.
+     */
+    public async getSessionsCount(): Promise<ISessionsCount> {
         const url = `${this.endPoint}/statistics/sessions`;
-        const { sessionCount } = (await this.rest.get(url));
+        const sessionCount = (await this.rest.get(url)) as ISessionsCount;
         return sessionCount;
     }
 }

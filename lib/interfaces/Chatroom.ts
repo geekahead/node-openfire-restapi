@@ -25,5 +25,13 @@ export interface IChatroom {
     outcasts?: Array<string>
 }
 
+
 export type Roles = "owners" | "admins" | "members" | "outcasts";
 export type ChatroomsTypes = "public" | "all";
+
+export interface IOccupants {
+    jid: string;
+    userAddress: string;
+    role: Roles;
+    affiliation: string;
+}
