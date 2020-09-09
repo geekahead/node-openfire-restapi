@@ -4,10 +4,13 @@ import { IParamUser, IRetriveUserSearch, IRetriveUsersResponse, IUser, IGroupNam
 import { RosterObject, RosterItem } from '../interfaces/Roster';
 import { Response } from 'got/dist/source';
 import Helper from '../helper';
+import {client, xml, jid} from '@xmpp/client';
 
 class User {
   private endPoint = 'users';
-  constructor(private rest: Rest) {}
+  constructor(private rest: Rest) {
+    
+  }
 
   /**
    * Retrieve users
