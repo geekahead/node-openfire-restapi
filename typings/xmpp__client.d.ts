@@ -18,6 +18,8 @@ declare module "@xmpp/client" {
     }
 
     export interface Stanza extends Element {
+        getChild(arg0: string): Element;
+        getAttr(arg0: string): string;
         // This has to be used for the static class initializer new Client.Stanza(..). If there is a better way feel free to
         // contribute.
         // tslint:disable-next-line
@@ -78,7 +80,12 @@ declare module "@xmpp/client" {
     export enum StanzaType {
         PERSENCE = "presence",
         MESSAGE = "message",
-        IQ = "iq"
+        IQ = "iq",
+    }
+
+    export enum ChatType {
+        CHAT = "chat",
+        GROUPCHAT = "groupchat"
     }
 
     export function client(options: ClientOptions): client.Client;
@@ -99,7 +106,7 @@ declare module "@xmpp/client" {
 
             on(event: EventType, c: (e: any, d: any) => any): this;
 
-            send(stanza: Stanza): void;
+            send(stanza: Stanza): Promise<any>;
         }
 
     }
@@ -144,7 +151,7 @@ declare module "@xmpp/client" {
 
     }
 
-    export function xml(name: StanzaType,
+    export function xml(name: string,
         attrs?: string | { [key: string]: any },
         ...children: Element[]
     ): Element;

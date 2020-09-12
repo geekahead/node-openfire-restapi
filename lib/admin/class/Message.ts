@@ -1,4 +1,4 @@
-import { Rest } from '../got';
+import { Rest } from '../../got';
 
 class Message {
   private endPoint = 'messages/users';

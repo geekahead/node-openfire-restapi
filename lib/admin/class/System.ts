@@ -1,4 +1,4 @@
-import { Rest } from '../got';
+import { Rest } from '../../got';
 import { Response } from 'got/dist/source';
 import { Properties, IPProperty } from '../interfaces/User';
 import { ISystemProperties, ISessionsCount } from '../interfaces/System';
@@ -69,3 +69,5 @@ class System {
         return sessionCount;
     }
 }
+
+export default System;

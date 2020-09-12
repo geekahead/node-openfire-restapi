@@ -1,4 +1,4 @@
-import { Rest } from '../got';
+import { Rest } from '../../got';
 
 /**
  * All api params related to groups

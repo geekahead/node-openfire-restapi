@@ -3,7 +3,7 @@
  */
 
 import * as xml2js from 'xml2js';
-import { RosterItem } from './interfaces/Roster';
+import { RosterItem } from './admin/interfaces/Roster';
 const parser = new xml2js.Parser({ explicitArray: false });
 const builder = new xml2js.Builder();
 

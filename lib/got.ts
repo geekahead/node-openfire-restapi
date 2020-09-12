@@ -3,7 +3,7 @@
  */
 
 import got, { Got, OptionsOfTextResponseBody, Response, HTTPError } from 'got';
-import { RequestFormat, ResponseFormat } from './interfaces/common';
+import { RequestFormat, ResponseFormat } from './admin/interfaces/common';
 
 export class Rest {
   private instance: Got;

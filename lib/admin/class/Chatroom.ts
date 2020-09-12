@@ -1,4 +1,4 @@
-import { Rest } from '../got';
+import { Rest } from '../../got';
 import { Response } from 'got/dist/source';
 import { IChatroom, Roles, ChatroomsTypes, IOccupants } from '../interfaces/Chatroom';
 

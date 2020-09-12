@@ -1,4 +1,4 @@
-import { Rest } from '../got';
+import { Rest } from '../../got';
 import { URLSearchParams } from 'url';
 import { ISecurityParamters } from "../interfaces/common";
 import { ISecurityAuditLogs } from '../interfaces/System';
@@ -19,3 +19,5 @@ class Security {
         return logs;
     }
 }
+
+export default Security;

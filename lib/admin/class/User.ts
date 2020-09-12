@@ -1,10 +1,9 @@
-import { Rest } from '../got';
+import { Rest } from '../../got';
 import { URLSearchParams } from 'url';
-import { IParamUser, IRetriveUserSearch, IRetriveUsersResponse, IUser, IGroupNames } from './../interfaces/User';
+import { IParamUser, IRetriveUserSearch, IRetriveUsersResponse, IUser, IGroupNames } from '../interfaces/User';
 import { RosterObject, RosterItem } from '../interfaces/Roster';
 import { Response } from 'got/dist/source';
-import Helper from '../helper';
-import {client, xml, jid} from '@xmpp/client';
+import Helper from '../../helper';
 
 class User {
   private endPoint = 'users';

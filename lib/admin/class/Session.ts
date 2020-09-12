@@ -1,4 +1,4 @@
-import { Rest } from '../got';
+import { Rest } from '../../got';
 import { ISessions } from "../interfaces/User";
 import { Response } from 'got/dist/source';
 
