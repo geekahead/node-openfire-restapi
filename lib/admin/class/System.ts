@@ -1,7 +1,7 @@
 import { Rest } from '../../got';
 import { Response } from 'got/dist/source';
-import { Properties, IPProperty } from '../interfaces/User';
-import { ISystemProperties, ISessionsCount } from '../interfaces/System';
+import { Properties, IPProperty, ISessionsCount } from '../interfaces/User';
+import { ISystemProperties} from '../interfaces/System';
 
 class System {
     private endPoint = 'system';

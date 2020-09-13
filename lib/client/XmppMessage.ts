@@ -1,9 +1,10 @@
-import * as xmppClient from "@xmpp/client";
+import * as xmpp_client from "@xmpp/client";
+import * as xmpp_xml from "@xmpp/xml";
 
 export class XmppMessage {
-    private msg: xmppClient.Stanza;
+    private msg: xmpp_client.Stanza;
 
-    constructor(msg: xmppClient.Stanza) {
+    constructor(msg: xmpp_client.Stanza) {
         this.msg = msg;
     }
 
@@ -15,16 +16,21 @@ export class XmppMessage {
         return this.msg.getAttr("type");
     }
 
-    public getText(): object {
-        return this.msg.getChild("body").getText();
+    public getText(): string {
+        const body: xmpp_xml.Element | any = this.msg.getChild("body");
+        if (body) {
+            return body.getText();
+        } else {
+            return "";
+        }
     }
 
     public isChat(): boolean {
-        return (this.getType() === xmppClient.ChatType.CHAT );
+        return (this.getType() === xmpp_client.ChatType.CHAT );
     }
 
     public isGroupChat(): boolean {
-        return (this.getType() === xmppClient.ChatType.GROUPCHAT );
+        return (this.getType() === xmpp_client.ChatType.GROUPCHAT );
     }
 
     public hasContent(): boolean {

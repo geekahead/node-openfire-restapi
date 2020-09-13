@@ -46,7 +46,7 @@ class OpenfireClient extends EventEmitter {
         return true;
     }
 
-    public async send(text: string, to: string, type: xmpp_client.ChatType = xmppClient.ChatType.CHAT): Promise<boolean> {
+    public async send(text: string, to: string, type: xmpp_client.ChatType = xmpp_client.ChatType.CHAT): Promise<boolean> {
         if (this.connected) {
             // 创建一个<message>元素并发送
             const message = xmpp_xml(

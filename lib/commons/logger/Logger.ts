@@ -2,11 +2,11 @@
  * 短时间格式
  */
 function shortDay(): string {
-    let date: Date = new Date();
-    let h = date.getHours(),
-        m = date.getMinutes(),
-        s = date.getSeconds(),
-        ms = date.getMilliseconds();
+    const date: Date = new Date();
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const s = date.getSeconds();
+    const ms = date.getMilliseconds();
     return `${h}:${m}:${s}.${ms}`;
 }
 
@@ -24,10 +24,14 @@ export enum E_Log_Level {
     Silence
 }
 
-//console方法
-const __ConsoleMethod__ = ["trace", "log", "warn", "error"];
+// console方法
+// tslint:disable-next-line:variable-name
+const __ConsoleMethod__: string[] = ["trace", "log", "warn", "error"];
+// tslint:disable-next-line:variable-name
 const __ConsoleMethodName__ = ["追踪", "日志", "警告", "错误"];
+// tslint:disable-next-line:variable-name
 const __ConsoleMethodColor__ = ["#cbd", "#afa", "#ff5", "#f88"];
+// tslint:disable-next-line:variable-name
 const __CallChains__ = [E_Log_Level.Trace, E_Log_Level.Warn, E_Log_Level.Error];
 
 /**
@@ -42,18 +46,18 @@ const __CallChains__ = [E_Log_Level.Trace, E_Log_Level.Warn, E_Log_Level.Error];
  * Logger.warn("warn", ...groups);
  * Logger.error("error", ...groups);
  */
-export class Logger {
+class Logger {
     private constructor() { }
 
     /** 当前日志等级 */
-    private static current_log_level: E_Log_Level = E_Log_Level.Trace;
+    private static CURRENT_LOG_LEVEL: E_Log_Level = E_Log_Level.Trace;
 
     /**
      * 设置日志等级
      * @param level
      */
     public static setLevel(level: E_Log_Level) {
-        this.current_log_level = level;
+        this.CURRENT_LOG_LEVEL = level;
     }
 
     /**
@@ -61,7 +65,7 @@ export class Logger {
      * @returns LOG_LEVEL
      */
     public static getLevel(): E_Log_Level {
-        return this.current_log_level;
+        return this.CURRENT_LOG_LEVEL;
     }
 
     /**
@@ -69,7 +73,7 @@ export class Logger {
      * @returns boolean
      */
     public static isFullOpen(): boolean {
-        return this.current_log_level === E_Log_Level.Trace;
+        return this.CURRENT_LOG_LEVEL === E_Log_Level.Trace;
     }
 
     /**
@@ -77,7 +81,7 @@ export class Logger {
      * @returns boolean
      */
     public static isSilence(): boolean {
-        return this.current_log_level === E_Log_Level.Silence;
+        return this.CURRENT_LOG_LEVEL === E_Log_Level.Silence;
     }
 
     /**
@@ -85,7 +89,7 @@ export class Logger {
      * @param level 日志等级
      */
     private static isValid(level: E_Log_Level): boolean {
-        return !this.isSilence() && level >= this.current_log_level;
+        return !this.isSilence() && level >= this.CURRENT_LOG_LEVEL;
     }
 
     /**
@@ -99,26 +103,43 @@ export class Logger {
             return;
         }
 
-        //渲染日志前置标记
-        let color = __ConsoleMethodColor__[level];
-        let args = [
+        // 渲染日志前置标记
+        const color = __ConsoleMethodColor__[level];
+        const args = [
             `%c${label} %c${shortDay()}`,
             `font-weight:bold;background:${color};`,
             `font-weight:bold;background:#ffb;`
         ];
 
-        //输出日志内容
-        let group_method =
+        // 输出日志内容
+        const groupMethod =
             label.length === 0 || label.indexOf("@") >= 0
                 ? "group"
                 : "groupCollapsed";
-        console[group_method](...args);
-        for (let group of groups) {
+        console[groupMethod](...args);
+        for (const group of groups) {
+            // tslint:disable-next-line:no-console
             console.log(group);
         }
         if (__CallChains__.includes(level)) {
-            console[__ConsoleMethod__[level]]("调用链回溯");
+            switch (__ConsoleMethod__[level]) {
+                case "trace":
+                    // tslint:disable-next-line:no-console
+                    console.trace("调用链回溯");
+                    break;
+                case "log":
+                    // tslint:disable-next-line:no-console
+                    console.log("调用链回溯");
+                case "warn":
+                    // tslint:disable-next-line:no-console
+                    console.warn("调用链回溯");
+                    break;
+                case "error":
+                    // tslint:disable-next-line:no-console
+                    console.error("调用链回溯");
+            }
         }
+        // tslint:disable-next-line:no-console
         console.groupEnd();
     }
 
@@ -127,6 +148,7 @@ export class Logger {
      * @param args
      */
     public static trace(label: string, ...args: any): void {
+        // tslint:disable-next-line:no-unused-expression
         this.isValid(E_Log_Level.Trace) &&
             this.applyGroup(E_Log_Level.Trace, label, ...args);
     }
@@ -136,6 +158,7 @@ export class Logger {
      * @param args
      */
     public static debug(label: string, ...args: any): void {
+        // tslint:disable-next-line:no-unused-expression
         this.isValid(E_Log_Level.Debug) &&
             this.applyGroup(E_Log_Level.Debug, label, ...args);
     }
@@ -145,6 +168,7 @@ export class Logger {
      * @param args
      */
     public static info(label: string, ...args: any): void {
+        // tslint:disable-next-line:no-unused-expression
         this.isValid(E_Log_Level.Info) &&
             this.applyGroup(E_Log_Level.Info, label, ...args);
     }
@@ -154,6 +178,7 @@ export class Logger {
      * @param args
      */
     public static warn(label: string, ...args: any): void {
+        // tslint:disable-next-line:no-unused-expression
         this.isValid(E_Log_Level.Warn) &&
             this.applyGroup(E_Log_Level.Warn, label, ...args);
     }
@@ -163,6 +188,7 @@ export class Logger {
      * @param args
      */
     public static error(label: string, ...args: any): void {
+        // tslint:disable-next-line:no-unused-expression
         this.isValid(E_Log_Level.Error) &&
             this.applyGroup(E_Log_Level.Error, label, ...args);
     }
