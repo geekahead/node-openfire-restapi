@@ -1,4 +1,5 @@
-import * as xmppClient from "@xmpp/client";
+import * as xmpp_client from "@xmpp/client";
+import * as xmpp_xml from "@xmpp/xml";
 import { EventEmitter } from "events";
 import { Logger as logger, E_Log_Level } from "../commons/logger/Logger";
 import { XmppMessage } from "./XmppMessage";
@@ -15,7 +16,7 @@ class OpenfireClient extends EventEmitter {
 
     protected connected: boolean = false;
 
-    protected xmpp: xmppClient.client.Client;
+    protected xmppClient!: xmpp_client.Client;
 
     constructor(options: { service: string, domain: string, resource: string }) {
         super(options as any);
@@ -30,29 +31,30 @@ class OpenfireClient extends EventEmitter {
      * @param password 
      */
     public login(username: string, password: string): void {
-        this.init({ "service": this.service, "domain": this.domain, "resource": this.resource, "username": username, "password": password });
+        this.init({ "service": this.service, "domain": this.domain, 
+            "resource": this.resource, "username": username, "password": password });
     }
 
     public async joinRoom(room: string): Promise<boolean> {
         // Sends a chat message to itself
-        const message = xmppClient.xml(
-            xmppClient.StanzaType.PERSENCE,
+        const message = xmpp_xml(
+            xmpp_client.StanzaType.PERSENCE,
             { to: room + "/" + this.username },
-            xmppClient.xml(xmppClient.StanzaType.X, { xmlns: "http://jabber.org/protocol/muc" })
+            xmpp_xml("x", { xmlns: "http://jabber.org/protocol/muc" })
         );
-        await this.xmpp.send(message);
+        await this.xmppClient.send(message);
         return true;
     }
 
-    public async send(text: string, to: string, type: xmppClient.ChatType = xmppClient.ChatType.CHAT): Promise<boolean> {
+    public async send(text: string, to: string, type: xmpp_client.ChatType = xmppClient.ChatType.CHAT): Promise<boolean> {
         if (this.connected) {
             // 创建一个<message>元素并发送
-            const message = xmppClient.xml(
-                xmppClient.StanzaType.MESSAGE,
+            const message = xmpp_xml(
+                xmpp_client.StanzaType.MESSAGE,
                 { "type": type, "to": to },
-                xmppClient.xml("body", {}, text)
+                xmpp_xml("body", {}, text)
             );
-            await this.xmpp.send(message);
+            await this.xmppClient.send(message);
             return true;
         } else {
             return false;
@@ -66,22 +68,22 @@ class OpenfireClient extends EventEmitter {
         username: string,
         password: string
     }): void {
-        this.xmpp = xmppClient.client(options);
+        this.xmppClient = xmpp_client.client(options);
 
         // debug(xmpp, true);
 
-        this.xmpp.on(xmppClient.EventType.ERROR, (err) => {
+        this.xmppClient.on(xmpp_client.EventType.ERROR, (err) => {
             logger.debug(err);
-            this.emit(xmppClient.EventType.ERROR, err);
+            this.emit(xmpp_client.EventType.ERROR, err);
         });
 
-        this.xmpp.on(xmppClient.EventType.OFFLINE, () => {
+        this.xmppClient.on(xmpp_client.EventType.OFFLINE, () => {
             logger.debug("offline");
-            this.emit(xmppClient.EventType.OFFLINE);
+            this.emit(xmpp_client.EventType.OFFLINE);
         });
 
-        this.xmpp.on(xmppClient.EventType.STANZA, async (stanza) => {
-            if (stanza.is(xmppClient.StanzaType.MESSAGE)) {
+        this.xmppClient.on(xmpp_client.EventType.STANZA, async (stanza) => {
+            if (stanza.is(xmpp_client.StanzaType.MESSAGE)) {
                 const xmppMsg: XmppMessage = new XmppMessage(stanza);
                 if ((xmppMsg.isChat() || xmppMsg.isGroupChat()) && xmppMsg.hasContent()) {
                     this.emit("message", xmppMsg);
@@ -93,12 +95,12 @@ class OpenfireClient extends EventEmitter {
             }
         });
 
-        this.xmpp.on(xmppClient.EventType.ONLINE, async (address) => {
+        this.xmppClient.on(xmpp_client.EventType.ONLINE, async (address) => {
             this.connected = true;
             // Makes itself available
-            await this.xmpp.send(xmppClient.xml(xmppClient.StanzaType.PERSENCE));
+            await this.xmppClient.send(xmpp_xml(xmpp_client.StanzaType.PERSENCE));
 
-            this.emit(xmppClient.EventType.ONLINE, address);
+            this.emit(xmpp_client.EventType.ONLINE, address);
 
         });
     }

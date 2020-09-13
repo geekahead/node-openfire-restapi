@@ -1,25 +1,32 @@
 // xmpp__client.d.ts:
 declare module "@xmpp/client" {
     import { EventEmitter } from "events";
-
-    export interface ClientOptions {
-        service: string;
-        domain: string;
-        resource?: string;
-        username: string;
-        password: string;
-    }
+    import * as xmpp__conection from "@xmpp/connection";
+    import * as xmpp__xml from "@xmpp/xml";
 
     export enum EventType {
         ERROR = "error",
         OFFLINE = "offline",
         ONLINE = "online",
-        STANZA = "stanza"
+        STANZA = "stanza",
+        OPEN = "open",
+        ELEMENT = "element",
+        DISCONNECT = "disconnect"
     }
 
-    export interface Stanza extends Element {
-        getChild(arg0: string): Element;
-        getAttr(arg0: string): string;
+    export interface Bosh {
+        url?: string;
+        prebind?(error: any, data: any): void;
+    }
+    
+    export enum StanzaType {
+        PERSENCE = "presence",
+        MESSAGE = "message",
+        IQ = "iq",
+    }
+
+    export class Stanza extends xmpp__xml.Element {
+
         // This has to be used for the static class initializer new Client.Stanza(..). If there is a better way feel free to
         // contribute.
         // tslint:disable-next-line
@@ -30,33 +37,22 @@ declare module "@xmpp/client" {
         type: string;
     }
 
-    export interface Element {
-        is(name: string, xmlns: string): boolean;
-        getName(): string;
-        getNS(): string;
-        findNS(prefix: string): string;
-        getXmlns(): string;
-        setAttrs(attrs: any): void;
-        getAttrs(): any;
-
-        up(): Element;
-        c(name: string, attrs?: any): Element;
-        cnode(child: Element): Element;
-        t(text: string): Element;
-        remove(el: Element, xmnls: string): Element;
-        attr(attr: any, val: any): any;
-
-        toString(): string;
-        toJSON(): any;
-
-        attrs: { [key: string]: any };
-        append(nodes: ElementChild): Element;
-        prepend(nodes: ElementChild): Element;
+    export enum ChatType {
+        CHAT = "chat",
+        GROUPCHAT = "groupchat"
     }
 
-    type ElementChild = Element | Element[] | string | number | boolean;
+    export interface ClientParmas {
+        service: string;
+        domain: string;
+        resource?: string;
+        username: string;
+        password: string;
+    }
 
-    export interface XmppOptions {
+    export function client(params: ClientParmas): Client;
+
+    export interface ClientOptions {
         jid: string;
         password: string;
         host?: string;
@@ -72,204 +68,25 @@ declare module "@xmpp/client" {
         bosh?: Bosh;
     }
 
-    export interface Bosh {
-        url?: string;
-        prebind?(error: any, data: any): void;
-    }
-    
-    export enum StanzaType {
-        PERSENCE = "presence",
-        MESSAGE = "message",
-        IQ = "iq",
-    }
+    export class Client extends xmpp__conection.Connection {
+        static Stanza: Stanza;
 
-    export enum ChatType {
-        CHAT = "chat",
-        GROUPCHAT = "groupchat"
-    }
+        constructor(options: ClientOptions);
 
-    export function client(options: ClientOptions): client.Client;
+        public on(event: EventType, c: (e: any, d: any) => any): this;
 
-    export namespace client {
+        public send(element: object, ...args: object[]): Promise<any>;
 
+        public connect(service: string): Promise<any>;
 
-        export class Client extends EventEmitter {
-            static Stanza: Stanza;
+        public socketParameters(...args: object[]): object;
 
-            constructor(options: XmppOptions);
+        public header(...args: object[]): string;
 
-            start(): Promise<object>;
+        public headerElement(...args: object[]): xmpp__xml.Element;
 
-            connect(): void;
+        public footer(...args: object[]): string;
 
-            disconnect(): void;
-
-            on(event: EventType, c: (e: any, d: any) => any): this;
-
-            send(stanza: Stanza): Promise<any>;
-        }
-
-    }
-
-    export function jid(): any;
-
-    export namespace jid {
-        class JID {
-            constructor(...args: any[]);
-
-            bare(...args: any[]): void;
-
-            equals(...args: any[]): void;
-
-            getDomain(...args: any[]): void;
-
-            getLocal(...args: any[]): void;
-
-            getResource(...args: any[]): void;
-
-            setDomain(...args: any[]): void;
-
-            setLocal(...args: any[]): void;
-
-            setResource(...args: any[]): void;
-
-            toString(...args: any[]): void;
-
-        }
-
-        function detectEscape(local: any): any;
-
-        function equal(a: any, b: any): any;
-
-        function escapeLocal(local: any): any;
-
-        function jid(args: any): any;
-
-        function parse(s: any): any;
-
-        function unescapeLocal(local: any): any;
-
-    }
-
-    export function xml(name: string,
-        attrs?: string | { [key: string]: any },
-        ...children: Element[]
-    ): Element;
-
-    export namespace xml {
-        class Element {
-            constructor(...args: any[]);
-
-            append(...args: any[]): void;
-
-            prepend(...args: any[]): void;
-
-            setAttrs(...args: any[]): void;
-
-        }
-
-        class Parser {
-            constructor(...args: any[]);
-
-            end(...args: any[]): void;
-
-            onEndElement(...args: any[]): void;
-
-            onStartElement(...args: any[]): void;
-
-            onText(...args: any[]): void;
-
-            write(...args: any[]): void;
-
-            static XMLError(...args: any[]): void;
-
-            static defaultMaxListeners: number;
-
-            static init(): void;
-
-            static listenerCount(emitter: any, type: any): any;
-
-            static once(emitter: any, name: any): any;
-
-            static usingDomains: boolean;
-
-        }
-
-        function XMLError(...args: any[]): void;
-
-        function escapeXML(s: any): any;
-
-        function escapeXMLText(s: any): any;
-
-        function unescapeXML(s: any): any;
-
-        function unescapeXMLText(s: any): any;
-
-        function x(name: any, attrs: any, children: any): any;
-
-        namespace Parser {
-            class EventEmitter {
-                constructor();
-
-                addListener(type: any, listener: any): any;
-
-                emit(type: any, args: any): any;
-
-                eventNames(): any;
-
-                getMaxListeners(): any;
-
-                listenerCount(type: any): any;
-
-                listeners(type: any): any;
-
-                off(type: any, listener: any): any;
-
-                on(type: any, listener: any): any;
-
-                once(type: any, listener: any): any;
-
-                prependListener(type: any, listener: any): any;
-
-                prependOnceListener(type: any, listener: any): any;
-
-                rawListeners(type: any): any;
-
-                removeAllListeners(type: any, ...args: any[]): any;
-
-                removeListener(type: any, listener: any): any;
-
-                setMaxListeners(n: any): any;
-
-                static EventEmitter: any;
-
-                static defaultMaxListeners: number;
-
-                static init(): void;
-
-                static listenerCount(emitter: any, type: any): any;
-
-                static once(emitter: any, name: any): any;
-
-                static usingDomains: boolean;
-
-            }
-
-            namespace XMLError {
-                const stackTraceLimit: number;
-
-                function captureStackTrace(p0: any, p1: any): any;
-
-            }
-
-        }
-
-        namespace XMLError {
-            const stackTraceLimit: number;
-      
-            function captureStackTrace (p0: any, p1: any): any;
-      
-          }
-
+        public footerElement(...args: object[]): xmpp__xml.Element;
     }
 }
