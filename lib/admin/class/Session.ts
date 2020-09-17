@@ -1,11 +1,11 @@
-import { Rest } from '../../got';
+import { RestClient } from '../../RestClient';
 import { ISessions } from "../interfaces/User";
 import { Response } from 'got/dist/source';
 
 class Session {
     private endPoint = 'sessions';
 
-    constructor(private rest: Rest) { }
+    constructor(private rest: RestClient) { }
 
     /**
      * Retrieve all user session.

@@ -1,4 +1,4 @@
-import { Rest } from '../../got';
+import { RestClient } from '../../RestClient';
 import { URLSearchParams } from 'url';
 import { ISecurityParamters } from "../interfaces/common";
 import { ISecurityAuditLogs } from '../interfaces/System';
@@ -6,7 +6,7 @@ import { ISecurityAuditLogs } from '../interfaces/System';
 class Security {
     private endPoint = '/logs/security';
 
-    constructor(private rest: Rest) { }
+    constructor(private rest: RestClient) { }
 
     /**
      * Get security audit logs.

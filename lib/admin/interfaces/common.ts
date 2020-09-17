@@ -1,13 +1,9 @@
-import { Rest } from '../../got';
+import { RestClient } from '../../RestClient';
 
 export interface IClass {
   endPoint: string;
-  rest: Rest;
+  rest: RestClient;
 }
-
-export type RequestFormat = "json" | "xml";
-
-export type ResponseFormat = "json" | "xml";
 
 export type Timestamp = number;
 

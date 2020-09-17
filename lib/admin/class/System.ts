@@ -1,11 +1,11 @@
-import { Rest } from '../../got';
+import { RestClient } from '../../RestClient';
 import { Response } from 'got/dist/source';
 import { Properties, IPProperty, ISessionsCount } from '../interfaces/User';
 import { ISystemProperties} from '../interfaces/System';
 
 class System {
     private endPoint = 'system';
-    constructor(private rest: Rest) {}
+    constructor(private rest: RestClient) {}
 
     /**
      * Retrieve all system properties.

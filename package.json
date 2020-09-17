@@ -4,18 +4,20 @@
   "description": "Api wrapper for openfire XMPP server",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand --forceExit --colors",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk=9229 -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --no-cache --no-watchman",
+    "test:e2e": "jest --runInBand --config ./test/jest-e2e.json",
+    "sonar": "node sonar-project.js",
     "dev": "tsc --watch",
     "build": "tsc",
+    "debugger": "node --inspect-brk=9229 ./node_modules/jest/bin/jest --runInBand --no-cache --no-watchman",
     "format": "prettier --write \"lib/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
     "version": "npm run format && git add -A lib",
     "postversion": "git push && git push --tags"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ns23/node-openfire-restapi.git"
   },
   "keywords": [
     "xmpp"
@@ -26,6 +28,7 @@
   "author": "ns23",
   "license": "MIT",
   "dependencies": {
+    "@babel/preset-typescript": "^7.10.4",
     "@xmpp/client": "^0.11.1",
     "got": "^11.5.0",
     "xml2js": "^0.4.23"
@@ -40,7 +43,11 @@
     "babel-jest": "^26.3.0",
     "babel-preset-env": "^1.7.0",
     "jest": "^26.4.2",
+    "jest-express": "^1.12.0",
+    "jest-sonar-reporter": "^2.0.0",
     "prettier": "^2.0.5",
+    "sonarqube-scanner": "^2.7.0",
+    "supertest": "^4.0.2",
     "ts-jest": "^26.3.0",
     "ts-lint": "^4.5.1",
     "ts-loader": "^8.0.0",

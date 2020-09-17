@@ -2,18 +2,19 @@ import Chatroom from './class/Chatroom';
 import Group from './class/Group';
 import Message from './class/Message';
 import User from './class/User';
-import { Rest } from '../got';
+import { RestClient, IAuthorization, RequestFormat, ResponseFormat } from '../RestClient';
 import Security from './class/Security';
 import System from './class/System';
 
 export interface AdminOptions {
     apiUrl: string;
-    secret: string;
-    isJson: boolean;
+    authorization: IAuthorization;
+    requestFormat?: RequestFormat;
+    responseFormat?: ResponseFormat;
 }
 
 export default class OpenfireAdmin {
-    private rest: Rest;
+    private rest: RestClient;
     user: User;
     chatroom: Chatroom;
     group: Group;
@@ -22,8 +23,8 @@ export default class OpenfireAdmin {
     system: System;
 
     constructor(params: AdminOptions) {
-        const { apiUrl, secret, isJson = true } = params;
-        this.rest = new Rest(apiUrl, secret);
+        const { apiUrl, authorization, requestFormat, responseFormat} = params;
+        this.rest = new RestClient(apiUrl, authorization, requestFormat, responseFormat);
         this.user = new User(this.rest);
         this.chatroom = new Chatroom(this.rest);
         this.group = new Group(this.rest);

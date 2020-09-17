@@ -1,9 +1,13 @@
 
+export interface IChatrooms {
+    chatRooms: IChatroom[]
+}
+
 export interface IChatroom {
     roomName: string,
-    naturalName?: string,
+    naturalName: string,
     subject?: string,
-    description?:string,
+    description:string,
     creationDate?: string,
     modificationDate?: string,
     maxUsers?: number,
@@ -27,7 +31,10 @@ export interface IChatroom {
 
 
 export type Roles = "owners" | "admins" | "members" | "outcasts";
-export type ChatroomsTypes = "public" | "all";
+export enum ChatroomsTypes {
+    PUBLIC = "public",
+    ALL = "all"
+} 
 
 export interface IOccupants {
     jid: string;

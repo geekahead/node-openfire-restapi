@@ -1,8 +1,8 @@
-import { Rest } from '../../got';
+import { RestClient } from '../../RestClient';
 
 class Message {
   private endPoint = 'messages/users';
-  constructor(private readonly rest: Rest) {
+  constructor(private readonly rest: RestClient) {
     this.rest = rest;
   }
 

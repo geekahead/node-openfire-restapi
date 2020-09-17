@@ -1,4 +1,4 @@
-import { Rest } from '../../got';
+import { RestClient } from '../../RestClient';
 
 /**
  * All api params related to groups
@@ -9,7 +9,7 @@ import {IGroup, IGroups} from '../interfaces/User';
 
 class Group {
   private endPoint = 'groups';
-  constructor(private rest: Rest) {}
+  constructor(private rest: RestClient) {}
 
   /**
    * Retrieve all groups.
