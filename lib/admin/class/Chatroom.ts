@@ -9,11 +9,15 @@ import { UriBuilder } from "../../commons/UriBuilder";
  */
 class Chatroom {
     private endPoint = 'chatrooms';
+    private endPointUri = UriBuilder.instance(this.endPoint);
+
     /**
      * 
      * @param restClient 
      */
-    constructor(private restClient: RestClient) { }
+    constructor(private restClient: RestClient) { 
+        
+    }
 
     /**
      * Create a chat room
@@ -43,7 +47,7 @@ class Chatroom {
      */
     public async updateChatroom(data: IChatroom, servicename: string = 'conference'): Promise<{statusCode: number}> {
         // const url = `${this.endPoint}/${data.roomName}`;
-        const url = UriBuilder.instance().concat(this.endPoint).slash().concat(data.roomName).toString();
+        const url = this.endPointUri.paths(data.roomName).uri();
         return await this.restClient.put(url, {
             json: data,
             searchParams: {
@@ -59,7 +63,7 @@ class Chatroom {
      * @returns Promise\<{statusCode: number}\>
      */
     public async deleteChatroom(roomname: string, servicename: string = 'conference'): Promise<{statusCode: number}> {
-        const url = `${this.endPoint}/${roomname}`;
+        const url = this.endPointUri.paths(roomname).uri();
         return await this.restClient.delete(url, { "searchParams": { "servicename": servicename } });
     }
 
@@ -74,7 +78,8 @@ class Chatroom {
      */
     public async getChatroom(roomname: string, servicename: string = 'conference'): Promise<IChatroom> {
         // const url = `${this.endPoint}/${roomname}`;
-        const url = UriBuilder.instance().concat(this.endPoint).slash().concat(roomname).toString();
+        // const url = UriBuilder.instance().concat(this.endPoint).slash().concat(roomname).uri();
+        const url = this.endPointUri.paths(roomname).uri();
         const room = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IChatroom;
         return room;
     }
@@ -91,7 +96,7 @@ class Chatroom {
      */
     public async getAllChatrooms(servicename: string = 'conference', type: ChatroomsTypes = ChatroomsTypes.PUBLIC
         ,search?: string): Promise<IChatrooms> {
-        const url = UriBuilder.instance(this.endPoint).toString();
+        const url = this.endPointUri.uri();
 
         const rooms = (await this.restClient.get(url, {
             "searchParams": {
@@ -113,7 +118,7 @@ class Chatroom {
      * @returns Promise\<IParticipants\>
      */
     public async getChatroomParticipants(roomname: string, servicename: string = 'conference'): Promise<IParticipants> {
-        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat("participants").toString();
+        const url = this.endPointUri.paths(roomname, "participants").uri();
         const participants = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IParticipants;
         return participants;
     }
@@ -127,7 +132,7 @@ class Chatroom {
      * @returns Promise\<IOccupants\>
      */
     public async getChatroomOccupants(roomname: string, servicename: string = 'conference'): Promise<IOccupants> {
-        const url = UriBuilder.instance(this.endPoint).slash().concat("roomname").slash().concat("occupants").toString();
+        const url = this.endPointUri.paths(roomname, "occupants").uri();
         const occupants = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IOccupants;
         return occupants;
     }
@@ -141,7 +146,7 @@ class Chatroom {
      * @returns Promise\<IChatMessages\>
      */
     public async getChatroomHistory(roomname: string, servicename: string = 'conference'): Promise<IChatMessages> {
-        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat("chathistory").toString();
+        const url = this.endPointUri.paths(roomname, "chathistory").uri();
         const chatHistory = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IChatMessages;
         return chatHistory;
     }
@@ -156,7 +161,7 @@ class Chatroom {
      * @returns Promise\<{statusCode: number}\>
      */
     public async inviteUserToChatroom(roomname: string, username: string, reason = ''): Promise<{statusCode: number}> {
-        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat("invite").slash().concat(username).toString();
+        const url = this.endPointUri.paths(roomname, "invite", username).uri();
         const body = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <mucInvitation>
             <reason>${reason}</reason>
@@ -186,7 +191,7 @@ class Chatroom {
      */
     public async addUserToChatroom(roomname: string, username: string, roles: Roles
         , servicename: string = 'conference'): Promise<{ statusCode: number, statusMessage: string }> {
-        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat(roles).slash().concat(username).uri();
+        const url = this.endPointUri.paths(roomname, roles, username).uri();
         return (await this.restClient.post(url,
             {
                 "searchParams":
@@ -206,7 +211,7 @@ class Chatroom {
      */
     public async addGroupToChatroom(roomname: string, groupname: string, roles: Roles
         , servicename: string = 'conference'): Promise<{ statusCode: number, statusMessage: string }> {
-        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat(roles).slash().concat(groupname).uri();
+        const url = this.endPointUri.paths(roomname, roles, groupname).uri();
         return (await this.restClient.post(url,
             {
                 "searchParams":
@@ -224,7 +229,7 @@ class Chatroom {
      */
     public async deleteUserFromChatroom(roomname: string, username: string, roles: Roles
         , servicename: string = 'conference'): Promise<{statusCode: number}> {
-        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat(roles).slash().concat(username).uri();
+        const url = this.endPointUri.paths(roomname, roles, username).uri();
         return (await this.restClient.delete(url,
             {
                 "searchParams":

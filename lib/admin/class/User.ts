@@ -5,11 +5,13 @@ import { RosterObject, RosterItem } from '../interfaces/Roster';
 import { Response } from 'got/dist/source';
 import Helper from '../../helper';
 import { Logger as logger, E_Log_Level } from "../../commons/logger/Logger"
+import { UriBuilder } from '../../commons/UriBuilder';
 
 logger.setLevel(E_Log_Level.Trace);
 
 class User {
     private endPoint = 'users';
+    private endPointUri = UriBuilder.instance(this.endPoint);
 
     /**
      * Constructor.
@@ -29,7 +31,7 @@ class User {
     public async retriveUsers(query: IRetriveUserSearch): Promise<IRetriveUsersResponse> {
         const searchParams = new URLSearchParams(query as any);
         return  (await this.restClient.get(this.endPoint, {
-            searchParams: searchParams.toString(),
+            "searchParams": searchParams.toString(),
         })) as IRetriveUsersResponse;
     }
 
@@ -41,7 +43,7 @@ class User {
      * @returns Promise\<IUser\>
      */
     public async retriveUser(username: string): Promise<IUser> {
-        const url = `users/${username}`;
+        const url = UriBuilder.instance().paths(this.endPoint, username).uri();
         return (await this.restClient.get(url)) as IUser;
     }
 
@@ -68,8 +70,8 @@ class User {
      * @return Promise\<{ statusCode: number, body: object }\>
      */
     public async deleteUser(username: string): Promise<{ statusCode: number, body: object }> {
-        const endPoint = `users/${username}`;
-        return (await this.restClient.delete(endPoint)) as { statusCode: number, body: object };
+        const uri = this.endPointUri.paths(username).uri();
+        return (await this.restClient.delete(uri)) as { statusCode: number, body: object };
     }
 
     /**
@@ -81,8 +83,8 @@ class User {
      * @returns Promise\<{statusCode: number}\>
      */
     public async updateUser(username: string, data: IParamUser): Promise<{statusCode: number}> {
-        const endPoint = `users/${username}`;
-        return await this.restClient.put(endPoint, { json: data });
+        const uri = this.endPointUri.paths(username).uri();
+        return await this.restClient.put(uri, { json: data });
     }
 
     /**
@@ -106,7 +108,7 @@ class User {
      * @returns Promise\<IGroupNames\>
      */
     public async getUserGroups(username: string): Promise<IGroupNames> {
-        const url = `${this.endPoint}/${username}/groups`;
+        const url = this.endPointUri.paths(username, "groups").uri();
         const groups = await this.restClient.get(url) as IGroupNames;
         return groups;
     }
@@ -120,7 +122,7 @@ class User {
      * @returns Promise\<{statusCode: number}\>
      */
     public async addUserToGroups(username: string, groupNames: IGroupNames): Promise<{statusCode: number}> {
-        const url = `${this.endPoint}/${username}/groups`;
+        const url = this.endPointUri.paths(username, "groups").uri();
         return await this.restClient.post(url, { json: groupNames });
     }
 
@@ -133,7 +135,7 @@ class User {
      * @returns Promise<{statusCode: number}>
      */
     public async addUserToGroup(username: string, groupname: string): Promise<{statusCode: number}> {
-        const url = `${this.endPoint}/${username}/groups/${groupname}`;
+        const url = this.endPointUri.paths(username, "groups", groupname).uri();
         return await this.restClient.post(url);
     }
 
@@ -147,7 +149,7 @@ class User {
      * @returns Promise\<{ statusCode: number, body: object }\>
      */
     public async deleteUserFromGroups(username: string, groupNames: IGroupNames): Promise<{ statusCode: number, body: object }> {
-        const url = `${this.endPoint}/${username}/groups`;
+        const url = this.endPointUri.paths(username, "groups").uri();
         return (await this.restClient.delete(url, { json: groupNames })) as { statusCode: number, body: object }
     };
 
@@ -162,7 +164,7 @@ class User {
      * @returns Promise\<{statusCode: number}\> 
      */
     public async deleteUserFromGroup(username: string, groupname: string): Promise<{statusCode: number}> {
-        const url = `${this.endPoint}/${username}/groups/${groupname}`;
+        const url = this.endPointUri.paths(username, "groups", groupname).uri();;
         return await this.restClient.delete(url);
     }
 
@@ -175,7 +177,7 @@ class User {
      * @returns Promise\<{statusCode: number}\>
      */
     public async lockoutUser(username: string): Promise<{statusCode: number}> {
-        const url = `lockouts/${username}`;
+        const url = this.endPointUri.paths("lockouts", username).uri();
         return await this.restClient.post(url);
     }
 
@@ -185,7 +187,7 @@ class User {
      * @returns Promise\<{statusCode: number}\>
      */
     public async unlockUser(username: string): Promise<{statusCode: number}> {
-        const url = `lockouts/${username}`;
+        const url = this.endPointUri.paths("lockouts", username).uri();
         return await this.restClient.delete(url);
     }
 
@@ -197,8 +199,8 @@ class User {
      * @returns Promise\<RosterObject\>
      */
     public async retriveUserRoster(username: string): Promise<RosterObject> {
-        const endPoint = `${this.endPoint}/${username}/roster`;
-        return (await this.restClient.get(endPoint)) as RosterObject;
+        const uri = this.endPointUri.paths(username, "roster").uri();
+        return (await this.restClient.get(uri)) as RosterObject;
     }
 
     /**
@@ -210,7 +212,7 @@ class User {
      * @returns Promise\<{statusCode: number}\>
      */
     public async createUserRoster(username: string, rooster: RosterItem): Promise<{statusCode: number}> {
-        const url = `${this.endPoint}/${username}/roster`;
+        const url = this.endPointUri.paths(username, "roster").uri();
         return await this.restClient.post(url, {
             json: rooster });
     }
@@ -223,8 +225,8 @@ class User {
      * @returns Promise\<{statusCode: number}\>
      */
     public async deleteUserRoster(username: string, jid: string): Promise<{statusCode: number}> {
-        const endPoint = `${this.endPoint}/${username}/roster/${jid}`;
-        return await this.restClient.delete(endPoint);
+        const uri = this.endPointUri.paths(username, "roster", jid).uri();
+        return await this.restClient.delete(uri);
     }
 
     /**
@@ -235,9 +237,8 @@ class User {
      * @returns Promise\<{statusCode: number}\>
      */
     public async updateUserRoster(username: string, rosterItem: RosterItem): Promise<{statusCode: number}> {
-        const jid = rosterItem.jid;
-        const endPoint = `${this.endPoint}/${username}/roster/${jid}`;
-        return await this.restClient.put(endPoint, { json: rosterItem });
+        const uri = this.endPointUri.paths(username, "roster", rosterItem.jid).uri();
+        return await this.restClient.put(uri, { json: rosterItem });
     }
 }
 

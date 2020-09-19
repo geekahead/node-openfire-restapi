@@ -27,6 +27,27 @@ export class UriBuilder {
         return this;
     }
 
+    public paths(...paths: string[]): UriBuilder {
+        const lastIndex = paths.length - 1;
+        paths.forEach((path, index, array: string[]) => {
+            this.value = this.value.concat(path).concat((index === lastIndex) ? "": "/");
+        });
+        
+        return this;
+    }
+
+    public filters(...filters: {key: string, value: string}[]): UriBuilder {
+        if (!filters || filters.length === 0) {
+            return this;
+        }
+        this.value = this.value.concat("?");
+        filters.forEach((filter, index, array: {key: string, value: any}[]) => {
+            this.value = this.value.concat((index === 0) ? "": "&").concat(filter.key).concat("=").concat(filter.value);
+        });
+
+        return this;
+    }
+
     public getValue(): string {
         return this.value;
     }
