@@ -16,7 +16,7 @@ export class XmppMessage {
         return this.msg.getAttr("type");
     }
 
-    public getText(): string {
+    public getBody(): string {
         const body: xmpp_xml.Element | any = this.msg.getChild("body");
         if (body) {
             return body.getText();
@@ -33,7 +33,7 @@ export class XmppMessage {
         return (this.getType() === xmpp_client.ChatType.GROUPCHAT );
     }
 
-    public hasContent(): boolean {
+    public hasBody(): boolean {
         return typeof this.msg.getChild("body") !== undefined;
     }
 

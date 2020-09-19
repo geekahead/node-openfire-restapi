@@ -85,7 +85,7 @@ class OpenfireClient extends EventEmitter {
         this.xmppClient.on(xmpp_client.EventType.STANZA, async (stanza) => {
             if (stanza.is(xmpp_client.StanzaType.MESSAGE)) {
                 const xmppMsg: XmppMessage = new XmppMessage(stanza);
-                if ((xmppMsg.isChat() || xmppMsg.isGroupChat()) && xmppMsg.hasContent()) {
+                if ((xmppMsg.isChat() || xmppMsg.isGroupChat()) && xmppMsg.hasBody()) {
                     this.emit("message", xmppMsg);
                 } else {
                     logger.warn("Received no chat or empty message: ", xmppMsg.toString())

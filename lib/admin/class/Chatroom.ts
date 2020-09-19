@@ -1,6 +1,7 @@
 import { RestClient } from '../../RestClient';
 import { Response } from 'got/dist/source';
-import { IChatroom, Roles, ChatroomsTypes, IOccupants, IChatrooms } from '../interfaces/Chatroom';
+import { IChatroom, Roles as Roles, ChatroomsTypes, IOccupants, IChatrooms, IParticipants, IChatMessages } from '../interfaces/Chatroom';
+import { UriBuilder } from "../../commons/UriBuilder";
 
 /**
  * All the endpoints related to chatroom
@@ -8,7 +9,11 @@ import { IChatroom, Roles, ChatroomsTypes, IOccupants, IChatrooms } from '../int
  */
 class Chatroom {
     private endPoint = 'chatrooms';
-    constructor(private rest: RestClient) { }
+    /**
+     * 
+     * @param restClient 
+     */
+    constructor(private restClient: RestClient) { }
 
     /**
      * Create a chat room
@@ -16,11 +21,12 @@ class Chatroom {
      * 
      * @param data 
      * @param servicename 
+     * @returns Promise\<{statusCode: number, statusMessage: string}\>
      */
     public async createChatroom(
         data: IChatroom, servicename: string = 'conference'
     ): Promise<{ statusCode: number, statusMessage: string | undefined }> {
-        return (await this.rest.post(this.endPoint, {
+        return (await this.restClient.post(this.endPoint, {
             json: data,
             searchParams: {
                 servicename,
@@ -28,26 +34,33 @@ class Chatroom {
         })) as { statusCode: number, statusMessage: string | undefined };
     }
 
-    public async updateChatroom(data: IChatroom, servicename: string = 'conference'): Promise<number> {
-        const url = `${this.endPoint}/${data.roomName}`;
-        const { statusCode } = await this.rest.put(url, {
+    /**
+     * Update chart room.
+     * 
+     * @param data 
+     * @param servicename 
+     * @returns Promise\<{statusCode: number}\>
+     */
+    public async updateChatroom(data: IChatroom, servicename: string = 'conference'): Promise<{statusCode: number}> {
+        // const url = `${this.endPoint}/${data.roomName}`;
+        const url = UriBuilder.instance().concat(this.endPoint).slash().concat(data.roomName).toString();
+        return await this.restClient.put(url, {
             json: data,
             searchParams: {
                 servicename,
             },
         });
-
-        return statusCode;
     }
 
     /**
      * Delete a chat room
      * @description Endpoint to delete a chat room.
+     * @param servicename 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async deleteChatroom(roomname: string, servicename: string = 'conference'): Promise<number> {
+    public async deleteChatroom(roomname: string, servicename: string = 'conference'): Promise<{statusCode: number}> {
         const url = `${this.endPoint}/${roomname}`;
-        const { statusCode } = await this.rest.delete(url, { searchParams: { "servicename": servicename } });
-        return statusCode;
+        return await this.restClient.delete(url, { "searchParams": { "servicename": servicename } });
     }
 
     /**
@@ -56,10 +69,13 @@ class Chatroom {
      * 
      * @param roomname 
      * @param servicename 
+     * 
+     * @returns Promise\<IChatroom\>
      */
     public async getChatroom(roomname: string, servicename: string = 'conference'): Promise<IChatroom> {
-        const url = `${this.endPoint}/${roomname}`;
-        const room = (await this.rest.get(url, { searchParams: { "servicename": servicename } })) as IChatroom;
+        // const url = `${this.endPoint}/${roomname}`;
+        const url = UriBuilder.instance().concat(this.endPoint).slash().concat(roomname).toString();
+        const room = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IChatroom;
         return room;
     }
 
@@ -71,16 +87,14 @@ class Chatroom {
      * @param search 
      * @param type 
      * @param servicename 
+     * @returns Promise\<IChatrooms\>
      */
-    public async getAllChatrooms(
-        servicename: string = 'conference',
-        type: ChatroomsTypes = ChatroomsTypes.PUBLIC,
-        search?: string
-    ): Promise<IChatrooms> {
-        const url = `${this.endPoint}`;
+    public async getAllChatrooms(servicename: string = 'conference', type: ChatroomsTypes = ChatroomsTypes.PUBLIC
+        ,search?: string): Promise<IChatrooms> {
+        const url = UriBuilder.instance(this.endPoint).toString();
 
-        const rooms = (await this.rest.get(url, {
-            searchParams: {
+        const rooms = (await this.restClient.get(url, {
+            "searchParams": {
                 "servicename": servicename,
                 "type": type,
                 "search": search
@@ -95,11 +109,12 @@ class Chatroom {
      * @description Endpoint to get all participants with a role of specified room.
      * 
      * @param roomname 
-     * @param servicename 
+     * @param servicename
+     * @returns Promise\<IParticipants\>
      */
-    public async getChatroomParticipants(roomname: string, servicename: string = 'conference') {
-        const url = `${this.endPoint}/${roomname}/participants`;
-        const participants = (await this.rest.get(url, { searchParams: { servicename } })) as Object;
+    public async getChatroomParticipants(roomname: string, servicename: string = 'conference'): Promise<IParticipants> {
+        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat("participants").toString();
+        const participants = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IParticipants;
         return participants;
     }
 
@@ -109,10 +124,11 @@ class Chatroom {
      * 
      * @param roomname 
      * @param servicename 
+     * @returns Promise\<IOccupants\>
      */
     public async getChatroomOccupants(roomname: string, servicename: string = 'conference'): Promise<IOccupants> {
-        const url = `${this.endPoint}/${roomname}/occupants`;
-        const occupants = (await this.rest.get(url, { searchParams: { servicename } })) as IOccupants;
+        const url = UriBuilder.instance(this.endPoint).slash().concat("roomname").slash().concat("occupants").toString();
+        const occupants = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IOccupants;
         return occupants;
     }
 
@@ -122,13 +138,41 @@ class Chatroom {
      * 
      * @param roomname 
      * @param servicename 
+     * @returns Promise\<IChatMessages\>
      */
-    public async getChatroomHistory(roomname: string, servicename: string = 'conference'): Promise<Object> {
-        const url = `${this.endPoint}/${roomname}/chathistory`;
-        const chatHistory = (await this.rest.get(url, { searchParams: { servicename } })) as Object;
+    public async getChatroomHistory(roomname: string, servicename: string = 'conference'): Promise<IChatMessages> {
+        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat("chathistory").toString();
+        const chatHistory = (await this.restClient.get(url, { "searchParams": { "servicename": servicename } })) as IChatMessages;
         return chatHistory;
     }
 
+    /**
+     * Invite user to a chat Room
+     * @description Endpoint to invite a user to a room.
+     * 
+     * @param roomname 
+     * @param username 
+     * @param reason 
+     * @returns Promise\<{statusCode: number}\>
+     */
+    public async inviteUserToChatroom(roomname: string, username: string, reason = ''): Promise<{statusCode: number}> {
+        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat("invite").slash().concat(username).toString();
+        const body = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <mucInvitation>
+            <reason>${reason}</reason>
+        </mucInvitation>`;
+
+        // const resp = await this.rest.post(url, {
+        //     body,
+        //     headers: { 'Content-Type': 'application/xml' },
+        // });
+
+        return await this.restClient.post(url, {
+            "json": {
+                "reason": reason
+            }
+        });
+    }
 
     /**
      * Add user with role to chat room
@@ -138,21 +182,16 @@ class Chatroom {
      * @param username 
      * @param roles 
      * @param servicename 
+     * @returns Promise\<{ statusCode: number, statusMessage: string }\>
      */
-    public async addUserToChatroom(
-        roomname: string,
-        username: string,
-        roles: Roles,
-        servicename: string = 'conference',
-    ) {
-        const url = `${this.endPoint}/${roomname}/${roles}/${username}`;
-        const { statusCode, statusMessage } = (await this.rest.post(url, {
-            searchParams: { servicename },
-        })) as Response;
-        return {
-            statusCode,
-            statusMessage,
-        };
+    public async addUserToChatroom(roomname: string, username: string, roles: Roles
+        , servicename: string = 'conference'): Promise<{ statusCode: number, statusMessage: string }> {
+        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat(roles).slash().concat(username).uri();
+        return (await this.restClient.post(url,
+            {
+                "searchParams":
+                    { "servicename": servicename }
+            })) as { statusCode: number, statusMessage: string };
     }
 
     /**
@@ -163,67 +202,34 @@ class Chatroom {
      * @param groupname 
      * @param roles 
      * @param servicename 
+     * @returns Promise\<{ statusCode: number, statusMessage: string }\> 
      */
-    public async addGroupToChatroom(
-        roomname: string,
-        groupname: string,
-        roles: Roles,
-        servicename: string = 'conference',
-    ) {
-        const url = `${this.endPoint}/${roomname}/${roles}/${groupname}`;
-        const { statusCode, statusMessage } = (await this.rest.post(url, {
-            searchParams: { servicename },
-        })) as Response;
-        return {
-            statusCode,
-            statusMessage,
-        };
+    public async addGroupToChatroom(roomname: string, groupname: string, roles: Roles
+        , servicename: string = 'conference'): Promise<{ statusCode: number, statusMessage: string }> {
+        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat(roles).slash().concat(groupname).uri();
+        return (await this.restClient.post(url,
+            {
+                "searchParams":
+                    { "servicename": servicename }
+            })) as { statusCode: number, statusMessage: string };
     }
 
     /**
-     * Invite user to a chat Room
-     * @description Endpoint to invite a user to a room.
-     * 
-     * @param roomname 
-     * @param username 
-     * @param reason 
-     */
-    public async inviteUserToChatroom(roomname: string, username: string, reason = '') {
-        const url = `${this.endPoint}/${roomname}/invite/${username}`;
-        const body = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <mucInvitation>
-            <reason>${reason}</reason>
-        </mucInvitation>`;
-
-        const resp = await this.rest.post(url, {
-            body,
-            headers: { 'Content-Type': 'application/xml' },
-        });
-
-        return {
-            statusCode: resp.statusCode,
-            statusMessage: resp.statusMessage,
-        };
-    }
-
-    /**
-     * Delete a user from a chat room
-     * Endpoint to remove a room user role.
-     * 
+     * Delete a user from a chat room.Endpoint to remove a room user role.
      * @param roomname 
      * @param username 
      * @param roles 
      * @param servicename 
+     * @returns Promise\<{statusCode: number}\> 
      */
-    public async deleteUserFromChatroom(
-        roomname: string,
-        username: string,
-        roles: Roles,
-        servicename: string = 'conference',
-    ): Promise<number> {
-        const url = `${this.endPoint}/${roomname}/${roles}/${username}`;
-        const status = await this.rest.delete(url, { searchParams: { servicename } });
-        return status.statusCode;
+    public async deleteUserFromChatroom(roomname: string, username: string, roles: Roles
+        , servicename: string = 'conference'): Promise<{statusCode: number}> {
+        const url = UriBuilder.instance(this.endPoint).slash().concat(roomname).slash().concat(roles).slash().concat(username).uri();
+        return (await this.restClient.delete(url,
+            {
+                "searchParams":
+                    { "servicename": servicename }
+            }));
     }
 }
 

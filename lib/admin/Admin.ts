@@ -14,7 +14,7 @@ export interface AdminOptions {
 }
 
 export default class OpenfireAdmin {
-    private rest: RestClient;
+    private restClient: RestClient;
     user: User;
     chatroom: Chatroom;
     group: Group;
@@ -24,12 +24,12 @@ export default class OpenfireAdmin {
 
     constructor(params: AdminOptions) {
         const { apiUrl, authorization, requestFormat, responseFormat} = params;
-        this.rest = new RestClient(apiUrl, authorization, requestFormat, responseFormat);
-        this.user = new User(this.rest);
-        this.chatroom = new Chatroom(this.rest);
-        this.group = new Group(this.rest);
-        this.message = new Message(this.rest);
-        this.security = new Security(this.rest);
-        this.system = new System(this.rest);
+        this.restClient = new RestClient(apiUrl, authorization, requestFormat, responseFormat);
+        this.user = new User(this.restClient);
+        this.chatroom = new Chatroom(this.restClient);
+        this.group = new Group(this.restClient);
+        this.message = new Message(this.restClient);
+        this.security = new Security(this.restClient);
+        this.system = new System(this.restClient);
     }
 }

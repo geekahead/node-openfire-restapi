@@ -10,8 +10,13 @@ logger.setLevel(E_Log_Level.Trace);
 
 class User {
     private endPoint = 'users';
-    constructor(private rest: RestClient) {
 
+    /**
+     * Constructor.
+     * 
+     * @param restClient 
+     */
+    constructor(private restClient: RestClient) {
     }
 
     /**
@@ -19,13 +24,13 @@ class User {
      * @description Endpoint to get all or filtered users
      * 
      * @param query 
+     * @returns Promise\<IRetriveUsersResponse\>
      */
     public async retriveUsers(query: IRetriveUserSearch): Promise<IRetriveUsersResponse> {
         const searchParams = new URLSearchParams(query as any);
-        const users = (await this.rest.get(this.endPoint, {
+        return  (await this.restClient.get(this.endPoint, {
             searchParams: searchParams.toString(),
         })) as IRetriveUsersResponse;
-        return users;
     }
 
     /**
@@ -33,11 +38,11 @@ class User {
      * @description Endpoint to get information over a specific user
      * 
      * @param username 
+     * @returns Promise\<IUser\>
      */
     public async retriveUser(username: string): Promise<IUser> {
         const url = `users/${username}`;
-        const user = (await this.rest.get(url)) as IUser;
-        return user;
+        return (await this.restClient.get(url)) as IUser;
     }
 
     /**
@@ -45,11 +50,12 @@ class User {
      * @description Endpoint to create a new user
      * 
      * @param data 
+     * @returns Promise\<{ statusCode: number, statusMessage: string | undefined }\>
      */
     public async createUser(
         data: IParamUser,
-    ): Promise<{ statusCode: number, statusMessage: any }> {
-        return (await this.rest.post(this.endPoint, {
+    ): Promise<{ statusCode: number, statusMessage: string | undefined }> {
+        return (await this.restClient.post(this.endPoint, {
             json: data,
         })) as { statusCode: number, statusMessage: any };
     }
@@ -59,10 +65,11 @@ class User {
      * @description Endpoint to delete a user
      * 
      * @param username 
+     * @return Promise\<{ statusCode: number, body: object }\>
      */
     public async deleteUser(username: string): Promise<{ statusCode: number, body: object }> {
         const endPoint = `users/${username}`;
-        return (await this.rest.delete(endPoint)) as { statusCode: number, body: object };
+        return (await this.restClient.delete(endPoint)) as { statusCode: number, body: object };
     }
 
     /**
@@ -71,11 +78,11 @@ class User {
      * 
      * @param username 
      * @param data 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async updateUser(username: string, data: IParamUser): Promise<number> {
+    public async updateUser(username: string, data: IParamUser): Promise<{statusCode: number}> {
         const endPoint = `users/${username}`;
-        const response = await this.rest.put(endPoint, { json: data });
-        return response.statusCode;
+        return await this.restClient.put(endPoint, { json: data });
     }
 
     /**
@@ -84,6 +91,7 @@ class User {
      * @description Endpoint to get group names of a specific user
      * 
      * @param username 
+     * @returns Promise\<IGroupNames\>
      */
     public async retrieveAllUserGroups(username: string): Promise<IGroupNames> {
         return this.getUserGroups(username);
@@ -95,10 +103,11 @@ class User {
      * @description Endpoint to get group names of a specific user
      * 
      * @param username 
+     * @returns Promise\<IGroupNames\>
      */
     public async getUserGroups(username: string): Promise<IGroupNames> {
         const url = `${this.endPoint}/${username}/groups`;
-        const groups = await this.rest.get(url) as IGroupNames;
+        const groups = await this.restClient.get(url) as IGroupNames;
         return groups;
     }
 
@@ -108,11 +117,11 @@ class User {
      * 
      * @param username 
      * @param groups 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async addUserToGroups(username: string, groupNames: IGroupNames): Promise<number> {
+    public async addUserToGroups(username: string, groupNames: IGroupNames): Promise<{statusCode: number}> {
         const url = `${this.endPoint}/${username}/groups`;
-        const { statusCode } = await this.rest.post(url, { json: groupNames });
-        return statusCode;
+        return await this.restClient.post(url, { json: groupNames });
     }
 
     /**
@@ -120,12 +129,12 @@ class User {
      * @description Endpoint to add user to a group
      * 
      * @param username 
-     * @param groupname 
+     * @param groupname
+     * @returns Promise<{statusCode: number}>
      */
-    public async addUserToGroup(username: string, groupname: string): Promise<number> {
+    public async addUserToGroup(username: string, groupname: string): Promise<{statusCode: number}> {
         const url = `${this.endPoint}/${username}/groups/${groupname}`;
-        const { statusCode } = await this.rest.post(url);
-        return statusCode;
+        return await this.restClient.post(url);
     }
 
     /**
@@ -135,10 +144,11 @@ class User {
      * 
      * @param username 
      * @param groupName 
+     * @returns Promise\<{ statusCode: number, body: object }\>
      */
     public async deleteUserFromGroups(username: string, groupNames: IGroupNames): Promise<{ statusCode: number, body: object }> {
         const url = `${this.endPoint}/${username}/groups`;
-        return (await this.rest.delete(url, { json: groupNames })) as { statusCode: number, body: object }
+        return (await this.restClient.delete(url, { json: groupNames })) as { statusCode: number, body: object }
     };
 
 
@@ -148,12 +158,12 @@ class User {
      * @description Endpoint to remove a user from a group
      * 
      * @param username 
-     * @param groupname 
+     * @param groupname
+     * @returns Promise\<{statusCode: number}\> 
      */
-    public async deleteUserFromGroup(username: string, groupname: string): Promise<number> {
+    public async deleteUserFromGroup(username: string, groupname: string): Promise<{statusCode: number}> {
         const url = `${this.endPoint}/${username}/groups/${groupname}`;
-        const { statusCode } = await this.rest.delete(url);
-        return statusCode;
+        return await this.restClient.delete(url);
     }
 
     /**
@@ -162,21 +172,21 @@ class User {
      * The user will be kicked if the user is online.
      * 
      * @param username 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async lockoutUser(username: string): Promise<number> {
+    public async lockoutUser(username: string): Promise<{statusCode: number}> {
         const url = `lockouts/${username}`;
-        const { statusCode } = await this.rest.post(url);
-        return statusCode;
+        return await this.restClient.post(url);
     }
 
     /**
      * 
      * @param username 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async unlockUser(username: string): Promise<number> {
+    public async unlockUser(username: string): Promise<{statusCode: number}> {
         const url = `lockouts/${username}`;
-        const { statusCode } = await this.rest.delete(url);
-        return statusCode;
+        return await this.restClient.delete(url);
     }
 
     /**
@@ -184,11 +194,11 @@ class User {
      * Endpoint to get roster entries (buddies) from a specific user
      * 
      * @param username 
+     * @returns Promise\<RosterObject\>
      */
     public async retriveUserRoster(username: string): Promise<RosterObject> {
         const endPoint = `${this.endPoint}/${username}/roster`;
-        const rosters = (await this.rest.get(endPoint)) as RosterObject;
-        return rosters;
+        return (await this.restClient.get(endPoint)) as RosterObject;
     }
 
     /**
@@ -197,12 +207,12 @@ class User {
      * 
      * @param username 
      * @param rooster 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async createUserRoster(username: string, rooster: RosterItem): Promise<number> {
+    public async createUserRoster(username: string, rooster: RosterItem): Promise<{statusCode: number}> {
         const url = `${this.endPoint}/${username}/roster`;
-        const { statusCode } = await this.rest.post(url, {
+        return await this.restClient.post(url, {
             json: rooster });
-        return statusCode;
     }
 
     /**
@@ -210,11 +220,11 @@ class User {
      * 
      * @param username
      * @param jid 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async deleteUserRoster(username: string, jid: string): Promise<number> {
+    public async deleteUserRoster(username: string, jid: string): Promise<{statusCode: number}> {
         const endPoint = `${this.endPoint}/${username}/roster/${jid}`;
-        const { statusCode } = await this.rest.delete(endPoint);
-        return statusCode;
+        return await this.restClient.delete(endPoint);
     }
 
     /**
@@ -222,12 +232,12 @@ class User {
      * 
      * @param username 
      * @param rosterItem 
+     * @returns Promise\<{statusCode: number}\>
      */
-    public async updateUserRoster(username: string, rosterItem: RosterItem): Promise<number> {
+    public async updateUserRoster(username: string, rosterItem: RosterItem): Promise<{statusCode: number}> {
         const jid = rosterItem.jid;
         const endPoint = `${this.endPoint}/${username}/roster/${jid}`;
-        const { statusCode } = await this.rest.put(endPoint, { json: rosterItem });
-        return statusCode;
+        return await this.restClient.put(endPoint, { json: rosterItem });
     }
 }
 
