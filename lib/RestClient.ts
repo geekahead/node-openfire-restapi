@@ -30,10 +30,9 @@ export class RestClient {
         });
     }
 
-    async get(url: string, options?: OptionsOfTextResponseBody): Promise<object | Error> {
+    async get(url: string, options?: OptionsOfTextResponseBody): Promise<Response| object | Error> {
         try {
-            const response = (await this.instance.get(url, options)) as Response<any>;
-            return response.body;
+            return await this.instance.get(url, options);
         } catch (error) {
             throw new Error(error);
         }
@@ -41,8 +40,7 @@ export class RestClient {
 
     async post(url: string, options?: OptionsOfJSONResponseBody): Promise<Response> {
         try {
-            const response = await this.instance.post(url, options);
-            return response;
+            return await this.instance.post(url, options);
         } catch (error) {
             return Promise.reject(error);
         }
@@ -50,8 +48,7 @@ export class RestClient {
 
     async put(url: string, options?: OptionsOfTextResponseBody): Promise<Response> {
         try {
-            const response = (await this.instance.put(url, options)) as Response<any>;
-            return response;
+            return await this.instance.put(url, options);
         } catch (error) {
             throw new Error(error);
         }
@@ -59,8 +56,7 @@ export class RestClient {
 
     async delete(url: string, options?: OptionsOfTextResponseBody): Promise<Response> {
         try {
-            const response = await this.instance.delete(url, options);
-            return response;
+            return await this.instance.delete(url, options);
         } catch (error) {
             throw new Error(error);
         }

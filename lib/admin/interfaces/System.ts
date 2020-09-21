@@ -1,11 +1,10 @@
-import { Properties } from "./User";
 import { Timestamp } from "./common";
 
-export interface ISystemProperties {
-    properties: Properties;
+export interface ISecurityAuditLogs {
+    logs: ISecurityAuditLog[];
 }
 
-export interface ISecurityAuditLogs {
+export interface ISecurityAuditLog {
     logId: string;
     username: string;
     timestamp: Timestamp;

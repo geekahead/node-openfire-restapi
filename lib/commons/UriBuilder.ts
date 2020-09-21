@@ -28,9 +28,8 @@ export class UriBuilder {
     }
 
     public paths(...paths: string[]): UriBuilder {
-        const lastIndex = paths.length - 1;
         paths.forEach((path, index, array: string[]) => {
-            this.value = this.value.concat(path).concat((index === lastIndex) ? "": "/");
+            this.value = this.value.concat(this.value.length === 0 ? "":"/").concat(path);
         });
         
         return this;

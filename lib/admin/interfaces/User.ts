@@ -1,6 +1,6 @@
 import { Timestamp } from "./common";
 
-export interface Property {
+export interface IProperty {
   key: string;
   value: string;
 }
@@ -10,8 +10,8 @@ export interface IPProperty {
   '@value': string;
 }
 
-export interface Properties {
-  property: IPProperty[];
+export interface IProperties {
+  property: IProperty[];
 }
 
 export interface IUser {
@@ -19,7 +19,7 @@ export interface IUser {
   name: string;
   email: string;
   password?: any;
-  properties: Property[];
+  properties: IProperty[];
 }
 
 export interface IParamUser {
@@ -27,7 +27,7 @@ export interface IParamUser {
   username: string;
   email?: string;
   password?: string;
-  properties?: Properties;
+  properties?: IProperties;
 }
 
 export interface IRetriveUsersResponse {
